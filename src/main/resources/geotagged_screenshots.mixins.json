@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.ccr4ft3r.geotaggedscreenshots.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "geotagged_screenshots.refmap.json",
+  "mixins": [
+    "xaero.SupportXaeroMinimapAccessor",
+    "xaero.WaypointRendererMixin"
+  ],
+  "client": [
+    "ScreenshotMixin",
+    "xaero.GuiMapAccessor"
+  ]
+}
