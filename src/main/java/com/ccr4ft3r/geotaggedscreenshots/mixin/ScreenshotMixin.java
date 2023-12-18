@@ -3,7 +3,6 @@ package com.ccr4ft3r.geotaggedscreenshots.mixin;
 import com.ccr4ft3r.geotaggedscreenshots.container.AlbumCollection;
 import com.ccr4ft3r.geotaggedscreenshots.container.ScreenshotMetadata;
 import com.ccr4ft3r.geotaggedscreenshots.util.FileUtil;
-import com.ccr4ft3r.geotaggedscreenshots.util.ImageUtil;
 import com.ccr4ft3r.geotaggedscreenshots.util.xaero.XaeroWaypointUtil;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.platform.NativeImage;
@@ -27,7 +26,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 import static com.ccr4ft3r.geotaggedscreenshots.GeotaggedScreenshots.*;
-import static com.ccr4ft3r.geotaggedscreenshots.ModConstants.*;
+import static com.ccr4ft3r.geotaggedscreenshots.util.ImageUtil.*;
 
 @Mixin(Screenshot.class)
 public class ScreenshotMixin {
@@ -49,7 +48,7 @@ public class ScreenshotMixin {
                 .setWorldId(AlbumCollection.INSTANCE.getCurrentId())
                 .setDimensionId(Objects.requireNonNull(Minecraft.getInstance().level, "No level at client side?").dimension().toString())
                 .setCoordinates(Objects.requireNonNull(Minecraft.getInstance().player, "No player at client side?").position());
-            File thumbnailFile = geotagged_screenshots$createThumbnail(event.getImage(), screenshotFile, metadata);
+            File thumbnailFile = createThumbnail(event.getImage(), screenshotFile, metadata);
             EXECUTOR.submit(() -> {
                 FileUtil.addMetadata(screenshotFile, metadata);
                 XaeroWaypointUtil.addNewScreenshotWaypoint(metadata, screenshotFile, thumbnailFile);
@@ -62,13 +61,4 @@ public class ScreenshotMixin {
         geotagged_screenshots$screenshotEvents.add(event);
     }
 
-    @Unique
-    private static File geotagged_screenshots$createThumbnail(NativeImage nativeimage, File target, ScreenshotMetadata metadata) {
-        int width = 400;
-        int height = (int) (width * ((float) nativeimage.getHeight() / nativeimage.getWidth()));
-        File thumbnailFile = new File(THUMBNAIL_DIR, target.getName());
-        ImageUtil.createThumbnail(nativeimage, thumbnailFile, width, height);
-        FileUtil.addMetadata(thumbnailFile, metadata);
-        return thumbnailFile;
-    }
 }

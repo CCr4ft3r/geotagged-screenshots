@@ -40,9 +40,9 @@ public class XaeroWaypointUtil {
         String name = FilenameUtils.removeExtension(screenshotFile.getName());
         Waypoint waypoint = new Waypoint(x, y, z, name, "S", 200);
         SupportXaeroMinimapAccessor minimap = (SupportXaeroMinimapAccessor) SupportMods.xaeroMinimap;
-        if (!minimap.waypointWorld().getSets().containsKey(GEOTAGGED_SCREENSHOT_SET))
-            minimap.waypointWorld().addSet(GEOTAGGED_SCREENSHOT_SET);
-        WaypointSet screenshotWaypointSet = minimap.waypointWorld().getSets().get(GEOTAGGED_SCREENSHOT_SET);
+        if (!minimap.waypointWorld().getSets().containsKey(getWaypointSet()))
+            minimap.waypointWorld().addSet(getWaypointSet());
+        WaypointSet screenshotWaypointSet = minimap.waypointWorld().getSets().get(getWaypointSet());
         screenshotWaypointSet.getList().add(waypoint);
         try {
             minimap.modMain().getSettings().saveWaypoints(minimap.waypointWorld());

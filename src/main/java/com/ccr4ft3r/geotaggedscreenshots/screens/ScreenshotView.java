@@ -15,6 +15,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+
 public class ScreenshotView extends Screen {
 
     private static final int BUTTON_HEIGHT = 20;
@@ -49,8 +51,9 @@ public class ScreenshotView extends Screen {
     public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float delta) {
         renderDirtBackground(0);
 
-        NativeImage image = screenshot.getOrLoadImage(ImageType.ORIGINAL);
-        if (image != null) {
+        CompletableFuture<NativeImage> future = screenshot.getImageFuture(ImageType.ORIGINAL);
+        NativeImage image;
+        if (future != null && future.isDone() && (image = future.getNow(null)) != null) {
             float imgRatio = (float) image.getWidth() / image.getHeight();
             int height = this.height - OFFSET * 3 - BUTTON_HEIGHT;
             int width = (int) (height * imgRatio);
@@ -61,7 +64,7 @@ public class ScreenshotView extends Screen {
             int xOffset = (this.width - width) / 2;
             int yOffset = (this.height - height) / 2;
             RenderUtil.renderImage(poseStack, screenshot.getId(ImageType.ORIGINAL), image.getWidth(), image.getHeight(), width, height, xOffset, yOffset - OFFSET * 3);
-        } else if (screenshot.getImageFuture(ImageType.ORIGINAL).isDone()) {
+        } else if (future != null && future.isDone()) {
             int height = Minecraft.getInstance().font.lineHeight;
             GuiComponent.drawCenteredString(poseStack, Minecraft.getInstance().font, missingMessage, this.width / 2, (this.height - height) / 2, 16777215);
         }

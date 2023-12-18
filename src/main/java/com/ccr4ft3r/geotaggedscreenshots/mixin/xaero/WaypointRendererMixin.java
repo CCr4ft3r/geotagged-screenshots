@@ -25,6 +25,8 @@ import xaero.map.mods.gui.Waypoint;
 import xaero.map.mods.gui.WaypointRenderContext;
 import xaero.map.mods.gui.WaypointRenderer;
 
+import java.util.concurrent.CompletableFuture;
+
 @Mixin(xaero.map.mods.gui.WaypointRenderer.class)
 public abstract class WaypointRendererMixin extends MapElementRenderer<Waypoint, WaypointRenderContext, WaypointRenderer> {
 
@@ -38,14 +40,16 @@ public abstract class WaypointRendererMixin extends MapElementRenderer<Waypoint,
         GeotaggedScreenshot geotaggedScreenshot = AlbumCollection.INSTANCE.getCurrent().getScreenshot(w.getX(), w.getY(), w.getZ());
         if (geotaggedScreenshot == null)
             return;
-        NativeImage image = geotaggedScreenshot.getOrLoadImage(ImageType.THUMBNAIL);
-        if (image != null) {
+
+        CompletableFuture<NativeImage> future = geotaggedScreenshot.getImageFuture(ImageType.THUMBNAIL);
+        NativeImage image;
+        if (future != null && future.isDone() && (image = future.getNow(null)) != null) {
             double imgScale = ((scale / 18) * optionalScale * this.context.worldmapWaypointsScale);
             int width = (int) Math.min(image.getWidth() * 1.5, (int) (image.getWidth() * imgScale));
             int height = (int) Math.min(image.getHeight() * 1.5, (int) (image.getHeight() * imgScale));
             RenderUtil.renderImage(matrixStack, geotaggedScreenshot.getId(ImageType.THUMBNAIL), width, height, width, height, width / -2, height / -2);
             if (!geotagged_screenshots$isHovered(location, w, mouseX, mouseY, scale, width, height, screenSizeBasedScale, context, partialTicks))
-                cir.setReturnValue(true);
+                cir.setReturnValue(false);
             else
                 geotagged_screenshots$handleInput(w, mc, geotaggedScreenshot);
         } else

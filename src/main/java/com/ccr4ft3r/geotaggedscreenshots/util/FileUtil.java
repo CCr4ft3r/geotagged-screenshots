@@ -79,7 +79,7 @@ public class FileUtil {
         }
     }
 
-    public static File getFile(ScreenshotMetadata screenshotMetadata, ImageType imageType) {
+    public static File findFile(ScreenshotMetadata screenshotMetadata, ImageType imageType) {
         File[] files = imageType.getDir().listFiles();
         if (files == null)
             return null;

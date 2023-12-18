@@ -41,7 +41,7 @@ public class WorldScreenshotAlbum {
         return screenshotsByHash.get(computeKey(x, y, z));
     }
 
-    public File load(GeotaggedScreenshot screenshot, ImageType imageType) {
-        return FileUtil.getFile(screenshot.getMetadata(), imageType);
+    public File findFile(GeotaggedScreenshot screenshot, ImageType imageType) {
+        return FileUtil.findFile(screenshot.getMetadata(), imageType);
     }
 }

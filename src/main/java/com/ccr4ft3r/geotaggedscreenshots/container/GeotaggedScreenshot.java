@@ -15,8 +15,9 @@ public class GeotaggedScreenshot {
     private final ScreenshotMetadata metadata;
 
     private final Map<ImageType, File> fileByType = new HashMap<>();
-    private final Map<ImageType, CompletableFuture<NativeImage>> imageByType = new HashMap<>();
+    private final Map<ImageType, CompletableFuture<NativeImage>> futureByType = new HashMap<>();
     private final Map<ImageType, DynamicTexture> textureByType = new HashMap<>();
+    private boolean isMissingThumbnail;
 
     public GeotaggedScreenshot(WorldScreenshotAlbum parent, ScreenshotMetadata metadata) {
         this.parent = parent;
@@ -24,37 +25,44 @@ public class GeotaggedScreenshot {
     }
 
     public CompletableFuture<NativeImage> getImageFuture(ImageType type) {
-        return imageByType.get(type);
+        if (futureByType.get(type) == null && (type == ImageType.ORIGINAL || !isMissingThumbnail))
+            loadImage(type);
+        return futureByType.get(type);
     }
 
-    public NativeImage getOrLoadImage(ImageType type) {
-        if (!imageByType.containsKey(type)) {
+    private void loadImage(ImageType type) {
+        if (!futureByType.containsKey(type)) {
             File file = fileByType.get(type);
             if (file != null && file.exists()) {
-                imageByType.put(type, ImageUtil.loadImage(file));
+                futureByType.put(type, ImageUtil.loadImage(file));
             } else {
-                file = parent.load(this, type);
+                file = parent.findFile(this, type);
+                if (file == null)
+                    return;
                 fileByType.put(type, file);
-                imageByType.put(type, ImageUtil.loadImage(file));
+                futureByType.put(type, ImageUtil.loadImage(file));
             }
         }
-        return imageByType.get(type).getNow(null);
     }
 
     public GeotaggedScreenshot setFile(ImageType type, File file) {
         fileByType.put(type, file);
+        if (type == ImageType.THUMBNAIL)
+            isMissingThumbnail = !file.exists();
         return this;
+    }
+
+    public File getFile(ImageType type) {
+        return fileByType.get(type);
     }
 
     public DynamicTexture getTexture(ImageType type) {
         DynamicTexture texture = textureByType.get(type);
         if (texture != null)
             return texture;
-        CompletableFuture<NativeImage> image = imageByType.get(type);
-        if (image == null)
-            getOrLoadImage(type);
-        else if (image.isDone()) {
-            texture = new DynamicTexture(image.join());
+        CompletableFuture<NativeImage> future = getImageFuture(type);
+        if (future != null && future.isDone()) {
+            texture = new DynamicTexture(future.join());
             textureByType.put(type, texture);
             return texture;
         }
@@ -75,7 +83,7 @@ public class GeotaggedScreenshot {
 
     public void close(ImageType type) {
         Optional.ofNullable(textureByType.remove(type)).ifPresent(DynamicTexture::close);
-        Optional.ofNullable(imageByType.remove(type)).ifPresent(future -> {
+        Optional.ofNullable(futureByType.remove(type)).ifPresent(future -> {
             NativeImage image = future.getNow(null);
             if (image != null)
                 image.close();
