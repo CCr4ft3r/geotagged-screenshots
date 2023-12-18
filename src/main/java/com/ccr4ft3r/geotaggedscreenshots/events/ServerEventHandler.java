@@ -20,9 +20,9 @@ public class ServerEventHandler {
 
     @SubscribeEvent
     public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getEntity().getLevel().isClientSide())
+        if (event.getEntity().level().isClientSide())
             return;
-        ServerLevel level = (ServerLevel) event.getEntity().getLevel();
+        ServerLevel level = (ServerLevel) event.getEntity().level();
         LazyOptional<WorldCapability> capability = level.getCapability(WorldCapabilityProvider.WORLD_CAP);
         capability.resolve().ifPresent(cap -> {
             ClientBoundWorldPacket packet = new ClientBoundWorldPacket(cap.getWorldId());

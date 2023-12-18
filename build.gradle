@@ -86,8 +86,8 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    implementation fg.deobf("curse.maven:xaeros-world-map-317780:4594982")
-    implementation fg.deobf("curse.maven:xaeros-minimap-263420:4593181")
+    implementation fg.deobf("curse.maven:xaeros-world-map-317780:4929640")
+    implementation fg.deobf("curse.maven:xaeros-minimap-263420:4933782")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }

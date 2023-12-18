@@ -5,9 +5,8 @@ import com.ccr4ft3r.geotaggedscreenshots.container.ImageType;
 import com.ccr4ft3r.geotaggedscreenshots.util.RenderUtil;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
@@ -35,21 +34,21 @@ public class ScreenshotView extends Screen {
         this.screenshot = screenshot;
         this.missingMessage = "Couldn't find screenshot for: " + coordinates;
         this.parent = parent;
-        this.closeButton = new Button(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, CommonComponents.GUI_DONE, btn -> onClose());
+        this.closeButton = Button.builder(CommonComponents.GUI_DONE, button -> onClose()).width(BUTTON_WIDTH).size(BUTTON_WIDTH, BUTTON_HEIGHT).build();
     }
 
     @Override
     protected void init() {
         super.init();
         clearWidgets();
-        closeButton.x = (width - BUTTON_WIDTH) / 2;
-        closeButton.y = height - BUTTON_HEIGHT - OFFSET;
+        closeButton.setX((width - BUTTON_WIDTH) / 2);
+        closeButton.setY(height - BUTTON_HEIGHT - OFFSET);
         addRenderableWidget(closeButton);
     }
 
     @Override
-    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float delta) {
-        renderDirtBackground(0);
+    public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
+        renderDirtBackground(guiGraphics);
 
         CompletableFuture<NativeImage> future = screenshot.getImageFuture(ImageType.ORIGINAL);
         NativeImage image;
@@ -63,13 +62,13 @@ public class ScreenshotView extends Screen {
             }
             int xOffset = (this.width - width) / 2;
             int yOffset = (this.height - height) / 2;
-            RenderUtil.renderImage(poseStack, screenshot.getId(ImageType.ORIGINAL), image.getWidth(), image.getHeight(), width, height, xOffset, yOffset - OFFSET * 3);
+            RenderUtil.renderImage(guiGraphics, screenshot.getId(ImageType.ORIGINAL), image.getWidth(), image.getHeight(), width, height, xOffset, yOffset - OFFSET * 3);
         } else if (future != null && future.isDone()) {
             int height = Minecraft.getInstance().font.lineHeight;
-            GuiComponent.drawCenteredString(poseStack, Minecraft.getInstance().font, missingMessage, this.width / 2, (this.height - height) / 2, 16777215);
+            guiGraphics.drawCenteredString(Minecraft.getInstance().font, missingMessage, this.width / 2, (this.height - height) / 2, 16777215);
         }
 
-        super.render(poseStack, mouseX, mouseY, delta);
+        super.render(guiGraphics, mouseX, mouseY, delta);
     }
 
     @Override
