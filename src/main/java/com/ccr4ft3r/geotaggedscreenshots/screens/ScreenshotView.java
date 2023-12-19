@@ -62,7 +62,7 @@ public class ScreenshotView extends Screen {
             }
             int xOffset = (this.width - width) / 2;
             int yOffset = (this.height - height) / 2;
-            RenderUtil.renderImage(guiGraphics, screenshot.getId(ImageType.ORIGINAL), image.getWidth(), image.getHeight(), width, height, xOffset, yOffset - OFFSET * 3);
+            RenderUtil.renderImage(guiGraphics, screenshot.getId(ImageType.ORIGINAL), width, height, xOffset, yOffset - OFFSET * 3);
         } else if (future != null && future.isDone()) {
             int height = Minecraft.getInstance().font.lineHeight;
             guiGraphics.drawCenteredString(Minecraft.getInstance().font, missingMessage, this.width / 2, (this.height - height) / 2, 16777215);

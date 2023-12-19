@@ -47,7 +47,7 @@ public abstract class WaypointRendererMixin extends MapElementRenderer<Waypoint,
             double imgScale = ((scale / 18) * optionalScale * this.context.worldmapWaypointsScale);
             int width = (int) Math.min(image.getWidth() * 1.5, (int) (image.getWidth() * imgScale));
             int height = (int) Math.min(image.getHeight() * 1.5, (int) (image.getHeight() * imgScale));
-            RenderUtil.renderImage(guiGraphics, geotaggedScreenshot.getId(ImageType.THUMBNAIL), width, height, width, height, width / -2, height / -2);
+            RenderUtil.renderImage(guiGraphics, geotaggedScreenshot.getId(ImageType.THUMBNAIL), width, height, width / -2, height / -2);
             if (!geotagged_screenshots$isHovered(location, w, mouseX, mouseZ, scale, width, height, screenSizeBasedScale, context, partialTicks))
                 cir.setReturnValue(false);
             else
