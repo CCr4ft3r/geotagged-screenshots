@@ -6,9 +6,9 @@ import com.ccr4ft3r.geotaggedscreenshots.container.ImageType;
 import com.ccr4ft3r.geotaggedscreenshots.screens.ScreenshotView;
 import com.ccr4ft3r.geotaggedscreenshots.util.RenderUtil;
 import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.world.phys.Vec3;
@@ -34,9 +34,9 @@ public abstract class WaypointRendererMixin extends MapElementRenderer<Waypoint,
         super(context, provider, reader);
     }
 
-    @Inject(method = "renderElement(ILxaero/map/mods/gui/Waypoint;ZLnet/minecraft/client/Minecraft;Lcom/mojang/blaze3d/vertex/PoseStack;DDDDFDDLnet/minecraft/client/renderer/texture/TextureManager;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lxaero/map/graphics/renderer/multitexture/MultiTextureRenderTypeRendererProvider;IDFDDZF)Z",
+    @Inject(method = "renderElement(ILxaero/map/mods/gui/Waypoint;ZLnet/minecraft/client/Minecraft;Lnet/minecraft/client/gui/GuiGraphics;DDDDFDDLnet/minecraft/client/renderer/texture/TextureManager;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lxaero/map/graphics/renderer/multitexture/MultiTextureRenderTypeRendererProvider;IDFDDZF)Z",
         at = @At(value = "HEAD"), remap = false, cancellable = true)
-    private void renderScreenshot(int location, Waypoint w, boolean hovered, Minecraft mc, PoseStack matrixStack, double cameraX, double cameraY, double mouseX, double mouseY, float brightness, double scale, double screenSizeBasedScale, TextureManager textureManager, Font fontRenderer, MultiBufferSource.BufferSource renderTypeBuffers, MultiTextureRenderTypeRendererProvider rendererProvider, int elementIndex, double optionalDepth, float optionalScale, double partialX, double partialY, boolean cave, float partialTicks, CallbackInfoReturnable<Boolean> cir) {
+    private void renderScreenshot(int location, Waypoint w, boolean hovered, Minecraft mc, GuiGraphics guiGraphics, double cameraX, double cameraZ, double mouseX, double mouseZ, float brightness, double scale, double screenSizeBasedScale, TextureManager textureManager, Font fontRenderer, MultiBufferSource.BufferSource renderTypeBuffers, MultiTextureRenderTypeRendererProvider rendererProvider, int elementIndex, double optionalDepth, float optionalScale, double partialX, double partialY, boolean cave, float partialTicks, CallbackInfoReturnable<Boolean> cir) {
         GeotaggedScreenshot geotaggedScreenshot = AlbumCollection.INSTANCE.getCurrent().getScreenshot(w.getX(), w.getY(), w.getZ());
         if (geotaggedScreenshot == null)
             return;
@@ -47,8 +47,8 @@ public abstract class WaypointRendererMixin extends MapElementRenderer<Waypoint,
             double imgScale = ((scale / 18) * optionalScale * this.context.worldmapWaypointsScale);
             int width = (int) Math.min(image.getWidth() * 1.5, (int) (image.getWidth() * imgScale));
             int height = (int) Math.min(image.getHeight() * 1.5, (int) (image.getHeight() * imgScale));
-            RenderUtil.renderImage(matrixStack, geotaggedScreenshot.getId(ImageType.THUMBNAIL), width, height, width, height, width / -2, height / -2);
-            if (!geotagged_screenshots$isHovered(location, w, mouseX, mouseY, scale, width, height, screenSizeBasedScale, context, partialTicks))
+            RenderUtil.renderImage(guiGraphics, geotaggedScreenshot.getId(ImageType.THUMBNAIL), width, height, width / -2, height / -2);
+            if (!geotagged_screenshots$isHovered(location, w, mouseX, mouseZ, scale, width, height, screenSizeBasedScale, context, partialTicks))
                 cir.setReturnValue(false);
             else
                 geotagged_screenshots$handleInput(w, mc, geotaggedScreenshot);

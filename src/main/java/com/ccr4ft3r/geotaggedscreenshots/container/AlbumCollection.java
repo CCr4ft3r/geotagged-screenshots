@@ -98,7 +98,7 @@ public class AlbumCollection {
     private static void displayMessage(String id, Object... parameter) {
         if (!ClientConfig.CONFIG_DATA.displayThumbnailRegenerationInChat.get())
             return;
-        MutableComponent messageComponent = MutableComponent.create(new TranslatableContents("message.geotagged_screenshots." + id));
+        MutableComponent messageComponent = MutableComponent.create(new TranslatableContents("message.geotagged_screenshots." + id, null, TranslatableContents.NO_ARGS));
         messageComponent = MutableComponent.create(new LiteralContents(MessageFormat.format(messageComponent.getString(), parameter)));
         Objects.requireNonNull(Minecraft.getInstance().player, "Minecraft.getInstance() was called on server side")
             .displayClientMessage(messageComponent, false);

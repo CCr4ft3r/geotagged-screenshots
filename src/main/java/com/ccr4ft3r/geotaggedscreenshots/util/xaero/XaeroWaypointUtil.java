@@ -4,15 +4,19 @@ import com.ccr4ft3r.geotaggedscreenshots.container.*;
 import com.ccr4ft3r.geotaggedscreenshots.mixin.xaero.SupportXaeroMinimapAccessor;
 import com.mojang.logging.LogUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.dimension.DimensionType;
 import org.apache.commons.io.FilenameUtils;
 import xaero.common.minimap.waypoints.Waypoint;
 import xaero.common.minimap.waypoints.WaypointSet;
 import xaero.map.core.XaeroWorldMapCore;
 import xaero.map.gui.GuiMap;
 import xaero.map.mods.SupportMods;
+import xaero.map.world.MapWorld;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,7 +32,9 @@ public class XaeroWaypointUtil {
             Entity player = Objects.requireNonNull(mc.getCameraEntity(), "No camera entity?");
             GuiMap guiMap = new GuiMap(null, null, XaeroWorldMapCore.currentSession.getMapProcessor(), player);
             ResourceKey<Level> dimension = Objects.requireNonNull(mc.level, "No level available?").dimension();
-            SupportMods.xaeroMinimap.checkWaypoints(mc.allowsMultiplayer(), dimension, "", 1, 1, guiMap);
+            MapWorld mapWorld = XaeroWorldMapCore.currentSession.getMapProcessor().getMapWorld();
+            Registry<DimensionType> dimensionTypes = Objects.requireNonNull(mc.cameraEntity).level().registryAccess().registryOrThrow(Registries.DIMENSION_TYPE);
+            SupportMods.xaeroMinimap.checkWaypoints(mc.allowsMultiplayer(), dimension, "", 1, 1, guiMap, mapWorld, dimensionTypes);
         }
     }
 
