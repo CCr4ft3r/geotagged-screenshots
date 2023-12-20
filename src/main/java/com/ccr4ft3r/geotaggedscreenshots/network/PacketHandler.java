@@ -18,6 +18,16 @@ public class PacketHandler {
     private static final SimpleChannel SIMPLE_CHANNEL = NetworkRegistry
         .newSimpleChannel(new ResourceLocation(ModConstants.MODID, "main"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
 
+    private static UUID lastHandledPacket;
+
+    // Workaround for the issue, that packet listener are being called two times (only happens in 1.20)
+    private static boolean shouldHandle(ClientBoundWorldPacket packet) {
+        if (packet.getId().equals(lastHandledPacket))
+            return false;
+        lastHandledPacket = packet.getId();
+        return true;
+    }
+
     public static void registerMessages() {
         SIMPLE_CHANNEL.registerMessage(0, ClientBoundWorldPacket.class, ClientBoundWorldPacket::encodeOnClientSide, ClientBoundWorldPacket::new, PacketHandler::handle);
     }
@@ -29,8 +39,9 @@ public class PacketHandler {
     private static void handle(ClientBoundWorldPacket packet, Supplier<NetworkEvent.Context> ctx) {
         final NetworkEvent.Context context = ctx.get();
         context.enqueueWork(() -> {
-            AlbumCollection.INSTANCE.setCurrent(UUID.fromString(packet.getWorldId()));
             context.setPacketHandled(true);
+            if (shouldHandle(packet))
+                AlbumCollection.INSTANCE.setCurrent(UUID.fromString(packet.getWorldId()));
         });
     }
 }

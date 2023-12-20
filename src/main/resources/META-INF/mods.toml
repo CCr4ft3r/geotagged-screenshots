@@ -26,12 +26,12 @@ description='''${mod_description}'''
 [[dependencies.${mod_id}]]
    modId="xaeroworldmap"
    mandatory=true
-   versionRange="[1.30.6,)"
+   versionRange="[1.37.2,)"
    ordering="NONE"
    side="CLIENT"
 [[dependencies.${mod_id}]]
    modId="xaerominimap"
    mandatory=true
-   versionRange="[23.5.0,)"
+   versionRange="[23.9.3,)"
    ordering="NONE"
    side="CLIENT"
