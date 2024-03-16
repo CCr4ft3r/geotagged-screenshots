@@ -28,9 +28,9 @@ public class ImageUtil {
         NativeImage thumbnail = new NativeImage(width, height, false);
         original.resizeSubRectTo(0, 0, original.getWidth(), original.getHeight(), thumbnail);
         try {
-            if (target.getParentFile().exists() || target.getParentFile().mkdirs())
+            if (target.getParentFile().exists() || target.getParentFile().mkdirs()) {
                 thumbnail.writeToFile(target);
-            else
+            } else
                 throw new IOException("Couldn't create directory " + target.getParentFile());
         } catch (IOException e) {
             LogUtils.getLogger().error("Couldn't create thumbnail file {} was not found.", target, e);

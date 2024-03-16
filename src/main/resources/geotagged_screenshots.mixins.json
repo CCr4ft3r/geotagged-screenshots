@@ -9,6 +9,7 @@
     "xaero.WaypointRendererMixin"
   ],
   "client": [
+    "KeyboardHandlerMixin",
     "ScreenshotMixin",
     "xaero.GuiMapAccessor"
   ]

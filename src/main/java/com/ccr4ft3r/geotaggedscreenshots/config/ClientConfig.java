@@ -13,6 +13,8 @@ public class ClientConfig {
         public ForgeConfigSpec.BooleanValue useSeparateSetForGeotaggedScreenshots;
         public ForgeConfigSpec.ConfigValue<String> waypointSetName;
         public ForgeConfigSpec.BooleanValue displayThumbnailRegenerationInChat;
+        public ForgeConfigSpec.BooleanValue hideUiAtTakingScreenshots;
+        public ForgeConfigSpec.BooleanValue disableScreenshotChatMessage;
 
         public Data(ForgeConfigSpec.Builder builder) {
             useSeparateSetForGeotaggedScreenshots = builder.comment("Determines whether geotagged screenshots should be added to a separate set of waypoints. " +
@@ -22,6 +24,10 @@ public class ClientConfig {
                 .define("waypointSetName", "Geotagged Screenshots");
             displayThumbnailRegenerationInChat = builder.comment("Determines whether to show a chat message for starting and completing the regeneration of thumbnails.")
                 .define("displayThumbnailRegenerationInChat", true);
+            hideUiAtTakingScreenshots = builder.comment("Determines whether to hide the whole ui at taking screenshots.")
+                .define("hideUiAtTakingScreenshots", true);
+            disableScreenshotChatMessage = builder.comment("Determines whether to disable the success message after taking a screenshot.")
+                .define("disableScreenshotChatMessage", true);
         }
     }
 }
