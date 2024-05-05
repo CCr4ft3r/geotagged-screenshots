@@ -13,6 +13,8 @@ public class ModConstants {
 
     public static final File SCREENSHOTS_DIR = new File(FMLPaths.GAMEDIR.get() + "/screenshots/");
 
+    public static final File METADATA_DIR = new File(FMLPaths.GAMEDIR.get() + "/screenshots-metadata");
+
     public static String getWaypointSet() {
         return ClientConfig.CONFIG_DATA.useSeparateSetForGeotaggedScreenshots.get() ?
             ClientConfig.CONFIG_DATA.waypointSetName.get() : "gui.xaero_default";

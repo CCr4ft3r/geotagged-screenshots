@@ -4,6 +4,7 @@ import com.ccr4ft3r.geotaggedscreenshots.container.ImageType;
 import com.ccr4ft3r.geotaggedscreenshots.container.ScreenshotMetadata;
 import com.mojang.logging.LogUtils;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.NodeList;
 
 import javax.imageio.IIOImage;
@@ -15,12 +16,12 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.metadata.IIOMetadataNode;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static com.ccr4ft3r.geotaggedscreenshots.ModConstants.*;
 import static javax.imageio.metadata.IIOMetadataFormatImpl.*;
 
 public class FileUtil {
@@ -39,6 +40,25 @@ public class FileUtil {
     public static final String TEXT_ENTRY = "TextEntry";
 
     public static ScreenshotMetadata getScreenshotMetadata(File file) {
+        if (file.toString().endsWith("jpg"))
+            return getScreenshotMetadataForJpg(file);
+        return getScreenshotMetadataFromPng(file);
+    }
+
+    private static ScreenshotMetadata getScreenshotMetadataForJpg(File file) {
+        try {
+            String fileName = file.getName().substring(0, file.getName().length() - 3);
+            File metadataFile = new File(METADATA_DIR, fileName + "ser");
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(metadataFile));
+            return (ScreenshotMetadata) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            LogUtils.getLogger().error("Couldn't read metadata of {}", file, e);
+            return null;
+        }
+    }
+
+    @Nullable
+    private static ScreenshotMetadata getScreenshotMetadataFromPng(File file) {
         try (ImageInputStream inputStream = ImageIO.createImageInputStream(file)) {
             ImageReader imageReader = ImageIO.getImageReaders(inputStream).next();
             imageReader.setInput(inputStream);
@@ -64,7 +84,26 @@ public class FileUtil {
         }
     }
 
-    public static void addMetadata(File file, ScreenshotMetadata screenshotMetadata) {
+    public static void saveMetadata(File file, ScreenshotMetadata screenshotMetadata) {
+        if (file.toString().endsWith("jpg"))
+            saveMetadataForJpg(file, screenshotMetadata);
+        addMetadataToPng(file, screenshotMetadata);
+    }
+
+    private static void saveMetadataForJpg(File file, ScreenshotMetadata screenshotMetadata) {
+        try {
+            String fileName = file.getName().substring(0, file.getName().length() - 3);
+            File metadataFile = new File(METADATA_DIR, fileName + "ser");
+            if (!metadataFile.getParentFile().exists() && !metadataFile.getParentFile().mkdirs())
+                throw new IOException("Couldn't create dir: " + metadataFile.getParentFile());
+            ObjectOutputStream ois = new ObjectOutputStream(new FileOutputStream(metadataFile));
+            ois.writeObject(screenshotMetadata);
+        } catch (IOException e) {
+            LogUtils.getLogger().error("Couldn't save metadata for {}", file, e);
+        }
+    }
+
+    private static void addMetadataToPng(File file, ScreenshotMetadata screenshotMetadata) {
         try (ImageInputStream inputStream = ImageIO.createImageInputStream(file); ImageOutputStream outputStream = ImageIO.createImageOutputStream(file)) {
             ImageReader reader = ImageIO.getImageReaders(inputStream).next();
             reader.setInput(inputStream);
@@ -118,9 +157,9 @@ public class FileUtil {
 
     private static void addGeotaggedScreenshotMetadata(IIOImage image, ScreenshotMetadata metadata) {
         appendEntry(image.getMetadata(), ID, metadata.getId());
-        appendEntry(image.getMetadata(), X, metadata.getCoordinates().x);
-        appendEntry(image.getMetadata(), Y, metadata.getCoordinates().y);
-        appendEntry(image.getMetadata(), Z, metadata.getCoordinates().z);
+        appendEntry(image.getMetadata(), X, metadata.getCoordinates().x());
+        appendEntry(image.getMetadata(), Y, metadata.getCoordinates().y());
+        appendEntry(image.getMetadata(), Z, metadata.getCoordinates().z());
         appendEntry(image.getMetadata(), WORLD_ID, metadata.getWorldId());
         appendEntry(image.getMetadata(), DIMENSION_ID, metadata.getDimensionId());
     }

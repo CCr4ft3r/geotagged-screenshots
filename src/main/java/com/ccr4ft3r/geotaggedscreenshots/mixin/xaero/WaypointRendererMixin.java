@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import xaero.map.element.MapElementReader;
 import xaero.map.element.MapElementRenderProvider;
@@ -54,6 +55,13 @@ public abstract class WaypointRendererMixin extends MapElementRenderer<Waypoint,
                 geotagged_screenshots$handleInput(w, mc, geotaggedScreenshot);
         } else
             cir.setReturnValue(true);
+    }
+
+    @Inject(method = "renderElementPre(ILxaero/map/mods/gui/Waypoint;ZLnet/minecraft/client/Minecraft;Lcom/mojang/blaze3d/vertex/PoseStack;DDDDFDDLnet/minecraft/client/renderer/texture/TextureManager;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lxaero/map/graphics/renderer/multitexture/MultiTextureRenderTypeRendererProvider;FDDZF)V", at = @At("HEAD"), cancellable = true, remap = false)
+    private void hideShadow(int location, Waypoint w, boolean hovered, Minecraft mc, PoseStack matrixStack, double cameraX, double cameraZ, double mouseX, double mouseZ, float brightness, double scale, double screenSizeBasedScale, TextureManager textureManager, Font fontRenderer, MultiBufferSource.BufferSource renderTypeBuffers, MultiTextureRenderTypeRendererProvider rendererProvider, float optionalScale, double partialX, double partialY, boolean cave, float partialTicks, CallbackInfo ci) {
+        GeotaggedScreenshot geotaggedScreenshot = AlbumCollection.INSTANCE.getCurrent().getScreenshot(w.getX(), w.getY(), w.getZ());
+        if (geotaggedScreenshot != null)
+            ci.cancel();
     }
 
     @Unique

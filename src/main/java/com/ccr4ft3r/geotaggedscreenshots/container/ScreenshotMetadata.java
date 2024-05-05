@@ -3,15 +3,16 @@ package com.ccr4ft3r.geotaggedscreenshots.container;
 import net.minecraft.world.phys.Vec3;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
-public class ScreenshotMetadata {
+public class ScreenshotMetadata implements Serializable {
 
     private final File file;
     private final UUID id;
 
-    private Vec3 coordinates;
+    private Vec3S coordinates;
 
     private String dimensionId;
 
@@ -31,12 +32,12 @@ public class ScreenshotMetadata {
         return this;
     }
 
-    public Vec3 getCoordinates() {
+    public Vec3S getCoordinates() {
         return coordinates;
     }
 
     public ScreenshotMetadata setCoordinates(Vec3 coordinates) {
-        this.coordinates = coordinates;
+        this.coordinates = new Vec3S(coordinates);
         return this;
     }
 

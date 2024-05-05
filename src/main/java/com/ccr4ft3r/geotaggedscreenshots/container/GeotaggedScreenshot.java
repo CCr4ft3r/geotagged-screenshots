@@ -3,7 +3,6 @@ package com.ccr4ft3r.geotaggedscreenshots.container;
 import com.ccr4ft3r.geotaggedscreenshots.util.ImageUtil;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.world.phys.Vec3;
 
 import java.io.File;
 import java.util.*;
@@ -93,7 +92,7 @@ public class GeotaggedScreenshot {
 
     @Override
     public int hashCode() {
-        Vec3 coordinates = metadata.getCoordinates();
-        return Objects.hash((int) coordinates.x, (int) coordinates.y, (int) coordinates.z);
+        Vec3S coordinates = metadata.getCoordinates();
+        return Objects.hash((int) coordinates.x(), (int) coordinates.y(), (int) coordinates.z());
     }
 }

@@ -20,7 +20,7 @@ public class ImageUtil {
         int height = (int) (width * ((float) nativeimage.getHeight() / nativeimage.getWidth()));
         File thumbnailFile = new File(THUMBNAIL_DIR, target.getName());
         ImageUtil.createThumbnail(nativeimage, thumbnailFile, width, height);
-        FileUtil.addMetadata(thumbnailFile, metadata);
+        FileUtil.saveMetadata(thumbnailFile, metadata);
         return thumbnailFile;
     }
 

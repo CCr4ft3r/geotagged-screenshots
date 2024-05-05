@@ -15,6 +15,7 @@ public class ClientConfig {
         public ForgeConfigSpec.BooleanValue displayThumbnailRegenerationInChat;
         public ForgeConfigSpec.BooleanValue hideUiAtTakingScreenshots;
         public ForgeConfigSpec.BooleanValue disableScreenshotChatMessage;
+        public ForgeConfigSpec.BooleanValue useJpgForScreenshots;
 
         public Data(ForgeConfigSpec.Builder builder) {
             useSeparateSetForGeotaggedScreenshots = builder.comment("Determines whether geotagged screenshots should be added to a separate set of waypoints. " +
@@ -28,6 +29,8 @@ public class ClientConfig {
                 .define("hideUiAtTakingScreenshots", true);
             disableScreenshotChatMessage = builder.comment("Determines whether to disable the success message after taking a screenshot.")
                 .define("disableScreenshotChatMessage", true);
+            useJpgForScreenshots = builder.comment("Specifies whether to use jpg instead of png for screenshots. When enabled metadata is being saved in separates files (/screenshots-metadata/*). Screenshots and metadata will then be loaded/identified by their file names! (renaming them will annul their connection)")
+                .define("useJpgForScreenshots", true);
         }
     }
 }

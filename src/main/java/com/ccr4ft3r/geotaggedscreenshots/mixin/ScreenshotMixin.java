@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.io.File;
@@ -56,6 +57,13 @@ public abstract class ScreenshotMixin {
         else consumer.accept(component);
     }
 
+    @Inject(method = "getFile", at = @At(value = "RETURN"), cancellable = true)
+    private static void adaptFiletype(File p_92288_, CallbackInfoReturnable<File> cir) {
+        if (!ClientConfig.CONFIG_DATA.useJpgForScreenshots.get())
+            return;
+        cir.setReturnValue(new File(cir.getReturnValue().toString().replace("png", "jpg")));
+    }
+
     @Inject(method = "grab(Ljava/io/File;Lcom/mojang/blaze3d/pipeline/RenderTarget;Ljava/util/function/Consumer;)V", at = @At("HEAD"), cancellable = true)
     private static void grabHead(File p_92290_, RenderTarget p_92293_, Consumer<Component> p_92294_, CallbackInfo ci) {
         geotagged_screenshots$screenshotCounter.incrementAndGet();
@@ -77,10 +85,9 @@ public abstract class ScreenshotMixin {
                     .setCoordinates(Objects.requireNonNull(Minecraft.getInstance().player, "No player at client side?").position());
                 File thumbnailFile = createThumbnail(event.getImage(), screenshotFile, metadata);
                 EXECUTOR.submit(() -> {
-                    FileUtil.addMetadata(screenshotFile, metadata);
+                    FileUtil.saveMetadata(screenshotFile, metadata);
                     XaeroWaypointUtil.addNewScreenshotWaypoint(metadata, screenshotFile, thumbnailFile);
                 });
-                ;
                 if (geotagged_screenshots$screenshotCounter.decrementAndGet() == 0) {
                     Minecraft.getInstance().options.hideGui = geotagged_screenshots$wasUiHidden.get();
                     geotagged_screenshots$wasUiHidden.set(null);

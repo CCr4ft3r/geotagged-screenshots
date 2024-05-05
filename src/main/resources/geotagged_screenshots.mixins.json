@@ -10,6 +10,7 @@
   ],
   "client": [
     "KeyboardHandlerMixin",
+    "NativeImageMixin",
     "ScreenshotMixin",
     "xaero.GuiMapAccessor"
   ]
