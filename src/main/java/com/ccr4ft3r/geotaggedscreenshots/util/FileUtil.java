@@ -136,6 +136,8 @@ public class FileUtil {
         if (files == null)
             files = new File[]{};
         for (File file : files) {
+            if (file.isDirectory() || !(file.toString().endsWith(".png") || file.toString().endsWith(".jpg")))
+                continue;
             ScreenshotMetadata metadata = FileUtil.getScreenshotMetadata(file);
             if (metadata != null && worldId.equals(metadata.getWorldId()))
                 result.add(metadata);
