@@ -1,6 +1,5 @@
 package com.ccr4ft3r.geotaggedscreenshots.util;
 
-import com.ccr4ft3r.geotaggedscreenshots.container.ScreenshotMetadata;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.logging.LogUtils;
 import net.minecraft.Util;
@@ -15,12 +14,11 @@ import static com.ccr4ft3r.geotaggedscreenshots.ModConstants.*;
 
 public class ImageUtil {
 
-    public static File createThumbnail(NativeImage nativeimage, File target, ScreenshotMetadata metadata) {
+    public static File createThumbnail(NativeImage nativeimage, File target) {
         int width = 400;
         int height = (int) (width * ((float) nativeimage.getHeight() / nativeimage.getWidth()));
         File thumbnailFile = new File(THUMBNAIL_DIR, target.getName());
         ImageUtil.createThumbnail(nativeimage, thumbnailFile, width, height);
-        FileUtil.saveMetadata(thumbnailFile, metadata);
         return thumbnailFile;
     }
 

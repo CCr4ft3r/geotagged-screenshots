@@ -1,5 +1,6 @@
 package com.ccr4ft3r.geotaggedscreenshots.container;
 
+import com.ccr4ft3r.geotaggedscreenshots.config.ClientConfig;
 import com.ccr4ft3r.geotaggedscreenshots.util.ImageUtil;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -10,17 +11,15 @@ import java.util.concurrent.CompletableFuture;
 
 public class GeotaggedScreenshot {
 
-    private final WorldScreenshotAlbum parent;
-    private final ScreenshotMetadata metadata;
+    private final String name;
 
     private final Map<ImageType, File> fileByType = new HashMap<>();
     private final Map<ImageType, CompletableFuture<NativeImage>> futureByType = new HashMap<>();
     private final Map<ImageType, DynamicTexture> textureByType = new HashMap<>();
     private boolean isMissingThumbnail;
 
-    public GeotaggedScreenshot(WorldScreenshotAlbum parent, ScreenshotMetadata metadata) {
-        this.parent = parent;
-        this.metadata = metadata;
+    public GeotaggedScreenshot(String name) {
+        this.name = name;
     }
 
     public CompletableFuture<NativeImage> getImageFuture(ImageType type) {
@@ -31,16 +30,9 @@ public class GeotaggedScreenshot {
 
     private void loadImage(ImageType type) {
         if (!futureByType.containsKey(type)) {
-            File file = fileByType.get(type);
-            if (file != null && file.exists()) {
+            File file = getFile(type);
+            if (file.exists())
                 futureByType.put(type, ImageUtil.loadImage(file));
-            } else {
-                file = parent.findFile(this, type);
-                if (file == null)
-                    return;
-                fileByType.put(type, file);
-                futureByType.put(type, ImageUtil.loadImage(file));
-            }
         }
     }
 
@@ -52,7 +44,7 @@ public class GeotaggedScreenshot {
     }
 
     public File getFile(ImageType type) {
-        return fileByType.get(type);
+        return fileByType.computeIfAbsent(type, t -> new File(type.getDir(), name + (ClientConfig.CONFIG_DATA.useJpgForScreenshots.get() ? ".jpg" : ".png")));
     }
 
     public DynamicTexture getTexture(ImageType type) {
@@ -72,10 +64,6 @@ public class GeotaggedScreenshot {
         return getTexture(type) != null ? getTexture(type).getId() : 0;
     }
 
-    public ScreenshotMetadata getMetadata() {
-        return metadata;
-    }
-
     public void close() {
         Arrays.stream(ImageType.values()).forEach(this::close);
     }
@@ -90,9 +78,7 @@ public class GeotaggedScreenshot {
         });
     }
 
-    @Override
-    public int hashCode() {
-        Vec3S coordinates = metadata.getCoordinates();
-        return Objects.hash((int) coordinates.x(), (int) coordinates.y(), (int) coordinates.z());
+    public String getName() {
+        return name;
     }
 }

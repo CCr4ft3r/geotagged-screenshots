@@ -1,6 +1,6 @@
 package com.ccr4ft3r.geotaggedscreenshots.mixin.xaero;
 
-import com.ccr4ft3r.geotaggedscreenshots.container.AlbumCollection;
+import com.ccr4ft3r.geotaggedscreenshots.GeotaggedScreenshots;
 import com.ccr4ft3r.geotaggedscreenshots.container.GeotaggedScreenshot;
 import com.ccr4ft3r.geotaggedscreenshots.container.ImageType;
 import com.ccr4ft3r.geotaggedscreenshots.screens.ScreenshotView;
@@ -38,7 +38,7 @@ public abstract class WaypointRendererMixin extends MapElementRenderer<Waypoint,
     @Inject(method = "renderElement(ILxaero/map/mods/gui/Waypoint;ZLnet/minecraft/client/Minecraft;Lcom/mojang/blaze3d/vertex/PoseStack;DDDDFDDLnet/minecraft/client/renderer/texture/TextureManager;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lxaero/map/graphics/renderer/multitexture/MultiTextureRenderTypeRendererProvider;IDFDDZF)Z",
         at = @At(value = "HEAD"), remap = false, cancellable = true)
     private void renderScreenshot(int location, Waypoint w, boolean hovered, Minecraft mc, PoseStack matrixStack, double cameraX, double cameraY, double mouseX, double mouseY, float brightness, double scale, double screenSizeBasedScale, TextureManager textureManager, Font fontRenderer, MultiBufferSource.BufferSource renderTypeBuffers, MultiTextureRenderTypeRendererProvider rendererProvider, int elementIndex, double optionalDepth, float optionalScale, double partialX, double partialY, boolean cave, float partialTicks, CallbackInfoReturnable<Boolean> cir) {
-        GeotaggedScreenshot geotaggedScreenshot = AlbumCollection.INSTANCE.getCurrent().getScreenshot(w.getX(), w.getY(), w.getZ());
+        GeotaggedScreenshot geotaggedScreenshot = GeotaggedScreenshots.ALBUM.getScreenshot(w.getName());
         if (geotaggedScreenshot == null)
             return;
 
@@ -59,7 +59,7 @@ public abstract class WaypointRendererMixin extends MapElementRenderer<Waypoint,
 
     @Inject(method = "renderElementPre(ILxaero/map/mods/gui/Waypoint;ZLnet/minecraft/client/Minecraft;Lcom/mojang/blaze3d/vertex/PoseStack;DDDDFDDLnet/minecraft/client/renderer/texture/TextureManager;Lnet/minecraft/client/gui/Font;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lxaero/map/graphics/renderer/multitexture/MultiTextureRenderTypeRendererProvider;FDDZF)V", at = @At("HEAD"), cancellable = true, remap = false)
     private void hideShadow(int location, Waypoint w, boolean hovered, Minecraft mc, PoseStack matrixStack, double cameraX, double cameraZ, double mouseX, double mouseZ, float brightness, double scale, double screenSizeBasedScale, TextureManager textureManager, Font fontRenderer, MultiBufferSource.BufferSource renderTypeBuffers, MultiTextureRenderTypeRendererProvider rendererProvider, float optionalScale, double partialX, double partialY, boolean cave, float partialTicks, CallbackInfo ci) {
-        GeotaggedScreenshot geotaggedScreenshot = AlbumCollection.INSTANCE.getCurrent().getScreenshot(w.getX(), w.getY(), w.getZ());
+        GeotaggedScreenshot geotaggedScreenshot = GeotaggedScreenshots.ALBUM.getScreenshot(w.getName());
         if (geotaggedScreenshot != null)
             ci.cancel();
     }
